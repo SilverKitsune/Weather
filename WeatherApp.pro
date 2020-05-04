@@ -28,12 +28,14 @@ SOURCES += \
         main.cpp \
     Drawing/drawdot.cpp \
     Coordinates/geocoordinates.cpp \
-    Coordinates/flatcoordinates.cpp
+    Coordinates/flatcoordinates.cpp \
+    temperature.cpp
 
 HEADERS += \
     Drawing/drawdot.h \
     Coordinates/geocoordinates.h \
-    Coordinates/flatcoordinates.h
+    Coordinates/flatcoordinates.h \
+    temperature.h
 
 
 # Default rules for deployment.

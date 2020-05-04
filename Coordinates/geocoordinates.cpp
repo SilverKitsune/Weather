@@ -1,6 +1,6 @@
 #include "geocoordinates.h"
 
-GeoCoordinates::GeoCoordinates()
+FlatCoordinates* GeoCoordinates::ToFlat()
 {
-
+     return new FlatCoordinates();
 }

@@ -1,6 +1,7 @@
 #include "flatcoordinates.h"
 
-FlatCoordinates::FlatCoordinates()
+
+void FlatCoordinates::ChangeSystem(double newCentreX, double newCentreY)
 {
 
 }
