@@ -1,0 +1,14 @@
+#ifndef GEOCOORDINATES_H
+#define GEOCOORDINATES_H
+
+
+class GeoCoordinates
+{
+    double fi;
+    double la;
+    
+public:
+    GeoCoordinates();
+};
+
+#endif // GEOCOORDINATES_H
