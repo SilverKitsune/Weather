@@ -1,8 +1,6 @@
 #ifndef GEOCOORDINATES_H
 #define GEOCOORDINATES_H
 
-#include "Coordinates/flatcoordinates.h"
-
 /**
  * @brief Класс, описывающий географические координаты
  */
@@ -20,12 +18,8 @@ public:
 
     GeoCoordinates(double _fi, double _la) : fi(_fi), la(_la) {}
 
-    /**
-     * @brief ToFlat - перевод географических координат в плоские
-     * @return плоские координаты
-     */
-    FlatCoordinates *ToFlat();
-
+    double Fi() {return fi;}
+    double La() {return la;}
 };
 
 #endif // GEOCOORDINATES_H

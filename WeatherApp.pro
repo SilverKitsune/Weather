@@ -29,13 +29,19 @@ SOURCES += \
     Drawing/drawdot.cpp \
     Coordinates/geocoordinates.cpp \
     Coordinates/flatcoordinates.cpp \
-    temperature.cpp
+    mainwindow.cpp \
+    temperature.cpp \
+    Coordinates/converter.cpp \
+    Coordinates/openglcoordinates.cpp
 
 HEADERS += \
     Drawing/drawdot.h \
     Coordinates/geocoordinates.h \
     Coordinates/flatcoordinates.h \
-    temperature.h
+    mainwindow.h \
+    temperature.h \
+    Coordinates/converter.h \
+    Coordinates/openglcoordinates.h
 
 
 # Default rules for deployment.
