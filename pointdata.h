@@ -6,15 +6,12 @@
 /**
  * @brief Класс хранящий температуру и координаты
  */
-class Temperature : public GeoCoordinates
+class PointData : public GeoCoordinates
 {
     float temperature;
-    //GeoCoordinates *geoCoord;
 
 public:
-    Temperature();
-    Temperature(double _fi, double _la, float temp);
-    //Temperature(GeoCoordinates *coord, float temp);
+    PointData(int _fi, int _la, float temp);
 
 };
 

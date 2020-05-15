@@ -11,6 +11,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = WeatherApp
 TEMPLATE = app
 
+LIBS += -lopengl32
+
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -25,23 +27,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    data.cpp \
         main.cpp \
     Drawing/drawdot.cpp \
     Coordinates/geocoordinates.cpp \
     Coordinates/flatcoordinates.cpp \
     mainwindow.cpp \
-    temperature.cpp \
     Coordinates/converter.cpp \
-    Coordinates/openglcoordinates.cpp
+    Coordinates/openglcoordinates.cpp \
+    pointdata.cpp
 
 HEADERS += \
     Drawing/drawdot.h \
     Coordinates/geocoordinates.h \
     Coordinates/flatcoordinates.h \
+    data.h \
     mainwindow.h \
-    temperature.h \
     Coordinates/converter.h \
-    Coordinates/openglcoordinates.h
+    Coordinates/openglcoordinates.h \
+    pointdata.h
 
 
 # Default rules for deployment.
@@ -49,3 +53,8 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+
+unix|win32: LIBS += -L$$PWD/testLIB/lib/ -lparser
+
+INCLUDEPATH += $$PWD/testLIB/include
+DEPENDPATH += $$PWD/testLIB/include
