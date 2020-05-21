@@ -3,19 +3,25 @@
 
 #include <QMainWindow>
 #include <QToolBar>
-#include <QMenuBar>
+#include "data.h"
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 private:
-    QMenuBar *menuBar;
-    QMenu *menu;
+    QList<Data> *data;
+
 public:
 
     MainWindow(QMainWindow *parent = 0);
 
-protected:
+private:
+
+    void createMenu();
+
+public slots:
+
+    void open_File();
 
 };
 

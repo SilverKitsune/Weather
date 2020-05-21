@@ -8,7 +8,7 @@
  */
 class PointData : public GeoCoordinates
 {
-    float temperature;
+    float param;
 
 public:
     PointData(int _fi, int _la, float temp);
