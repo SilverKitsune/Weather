@@ -4,11 +4,14 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QMenuBar>
+#include "Drawing/drawdata.h"
 
 MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent)
 {
     resize(800,600);
     createMenu();
+    drawData = new DrawData();
+    setCentralWidget(drawData);
 }
 
 void MainWindow::createMenu()
@@ -17,23 +20,18 @@ void MainWindow::createMenu()
     file = menuBar()->addMenu("&File");
 
     file->addAction("&Open", this, SLOT(open_File()));
-
-
-
 }
 
 void MainWindow::open_File()
 {
+    QString fileName = "C:\\Users\\Allo4ka\\Downloads\\Telegram Desktop\\gfs.grb";
 
-    QString fileName = QFileDialog::getOpenFileName(this,
+    /*QString fileName = QFileDialog::getOpenFileName(this,
                                 QString::fromUtf8("Открыть файл"),
                                 QDir::currentPath(),
-                                "(*.grb);;All files (*.*)");
+                                "(*.grb);;All files (*.*)");*/
     qDebug() << fileName;
-
-    data = Data::readData(fileName);
-
-
+    drawData->readData(fileName);
     qDebug() << "was read";
 
 }

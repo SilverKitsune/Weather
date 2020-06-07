@@ -3,18 +3,10 @@
 
 #include "pointdata.h"
 #include "parser.h"
+
 class Data
 {
-
-  /*  int Ni; //количество точек вдоль параллели
-    int Nj; //количество точек вдоль меридиана
-    int fi_begin;
-    int la_begin;
-    int fi_end;
-    int la_end;
-    int Di; //приращение по i
-    int Dj; //приращение по j */
-
+public:
     int year;
     int month;
     int day;
@@ -23,7 +15,7 @@ class Data
    // string typeOfParameter = "Temp";
     QList<paramData> pointsData;
 
-public:
+
 
     Data();
     static QList<Data>* readData(QString fileName);

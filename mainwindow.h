@@ -3,13 +3,12 @@
 
 #include <QMainWindow>
 #include <QToolBar>
-#include "data.h"
+#include "Drawing/drawdata.h"
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-private:
-    QList<Data> *data;
+    DrawData *drawData;
 
 public:
 

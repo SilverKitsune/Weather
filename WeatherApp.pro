@@ -27,9 +27,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    Drawing/drawdata.cpp \
     data.cpp \
         main.cpp \
-    Drawing/drawdot.cpp \
     Coordinates/geocoordinates.cpp \
     Coordinates/flatcoordinates.cpp \
     mainwindow.cpp \
@@ -38,9 +38,9 @@ SOURCES += \
     pointdata.cpp
 
 HEADERS += \
-    Drawing/drawdot.h \
     Coordinates/geocoordinates.h \
     Coordinates/flatcoordinates.h \
+    Drawing/drawdata.h \
     data.h \
     mainwindow.h \
     Coordinates/converter.h \
@@ -54,7 +54,25 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 
-unix|win32: LIBS += -L$$PWD/testLIB/lib/ -lparser
 
-INCLUDEPATH += $$PWD/testLIB/include
-DEPENDPATH += $$PWD/testLIB/include
+
+DISTFILES += \
+    sh.fsh \
+    sh.vsh
+
+unix|win32: LIBS += -L$$PWD/includes/testLIB/lib/ -lparser
+
+INCLUDEPATH += $$PWD/includes/testLIB/include
+DEPENDPATH += $$PWD/includes/testLIB/include
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/includes/freetype-windows-binaries-master/win64/ -lfreetype
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/includes/freetype-windows-binaries-master/win64/ -lfreetype
+else:unix: LIBS += -L$$PWD/includes/freetype-windows-binaries-master/win64/ -lfreetype
+
+INCLUDEPATH += $$PWD/includes/freetype-windows-binaries-master/include
+DEPENDPATH += $$PWD/includes/freetype-windows-binaries-master/include
+
+unix|win32: LIBS += -L$$PWD/includes/glew-2.1.0-win32/glew-2.1.0/lib/Release/x64/ -lglew32s
+
+INCLUDEPATH += $$PWD/includes/glew-2.1.0-win32/glew-2.1.0/include/GL
+DEPENDPATH += $$PWD/includes/glew-2.1.0-win32/glew-2.1.0/include/GL
