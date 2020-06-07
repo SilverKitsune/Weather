@@ -31,14 +31,14 @@ void DrawData::initTextures()
     if (FT_Init_FreeType(&ft))
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
     FT_Face face;
-    if (FT_New_Face(ft, "C:\\Users\\Allo4ka\\Desktop\\qtprojects\\WeatherApp\\fonts\\VIVALDII.ttf", 0, &face))
+    if (FT_New_Face(ft, "C:\\Users\\Allo4ka\\Desktop\\qtprojects\\WeatherApp\\fonts\\trebuc.ttf", 0, &face))
         std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 
     FT_Set_Pixel_Sizes(face,0,48);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
 
         // Load character glyph
-        if (FT_Load_Char(face, '7', FT_LOAD_RENDER))
+        if (FT_Load_Char(face, '2', FT_LOAD_RENDER))
         {
             std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
             return;
@@ -96,15 +96,16 @@ void DrawData::initializeGL()
     }
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glClearColor(0.20f, 0.05f, 0.01f, 1.00f);
+    glClearColor(0.4f, 0.6f, 0.8f, 1.00f);
 
     printf("OpenGL : %s\n",
            glGetString(GL_VERSION)
     );
 
     initShaders();
+    initTextures();
 
-    testVertices();
+
 
     // ** Vertex Array Object ** //
     vao->create();
@@ -113,10 +114,10 @@ void DrawData::initializeGL()
     // ** Vertex Buffer Objects ** //
     vbo->create();
     vbo->bind();
-    vbo->allocate(vertices, sizeof(vertices));
+    testVertices();
     shaderProgram->enableAttributeArray(l_vertex);
     shaderProgram->setAttributeBuffer(l_vertex,GL_FLOAT,0,4);
-    initTextures();
+    //initTextures();
     vao->release();
     vbo->release();
     shaderProgram->release();
@@ -137,11 +138,11 @@ void DrawData::resizeGL(int width, int height)
 void DrawData::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    //glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE0);
     this->glBindTexture(GL_TEXTURE_2D, Characters.TextureID);
     shaderProgram->bind();
     vao->bind();
-    shaderProgram->setUniformValue(l_textColor, 0.0,1.0,1.0);
+    shaderProgram->setUniformValue(l_textColor, 0.0,0.0,0.0);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     vao->release();
@@ -179,42 +180,54 @@ void DrawData::paintData()
 void DrawData::testVertices()
 {
     N = 24;
-    GLfloat xpos, ypos, scale = 100, w, h;
+    GLfloat xpos, ypos, scale = 0.005, w, h;
     xpos = 0.5 + Characters.Bearing.x * scale;
     ypos = 0.5 - (Characters.Size.y - Characters.Bearing.y)*scale;
     w = Characters.Size.x * scale;
     h = Characters.Size.y * scale;
 
-    //vertices = new GLfloat [N] ();
+    GLfloat vertices [N];
     vertices[0] = xpos;
     vertices[1] = ypos + h;
-    vertices[2] = 1.0;
-    vertices[3] = 1.0;
+    vertices[2] = 0.0;
+    vertices[3] = 0.0;
 
     vertices[4] = xpos;
     vertices[5] = ypos;
-    vertices[6] = 1.0;
-    vertices[7] = 0.0;
+    vertices[6] = 0.0;
+    vertices[7] = 1.;
 
     vertices[8] = xpos + w;
     vertices[9] = ypos;
-    vertices[10] = 0.0;
-    vertices[11] = 0.0;
+    vertices[10] = 1.0;
+    vertices[11] = 1.0;
 
     vertices[12] = xpos;
     vertices[13] = ypos + h;
-    vertices[14] = 1.0;
-    vertices[15] = 1.0;
+    vertices[14] = 0.0;
+    vertices[15] = 0.0;
 
     vertices[16] = xpos + w;
     vertices[17] = ypos;
-    vertices[18] = 0.0;
-    vertices[19] = 0.0;
+    vertices[18] = 1.0;
+    vertices[19] = 1.0;
 
     vertices[20] = xpos + w;
     vertices[21] = ypos + h;
-    vertices[22] = 0.0;
-    vertices[23] = 1.0;
+    vertices[22] = 1.0;
+    vertices[23] = 0.0;
+
+    qDebug() << "*********************************" << endl;
+    qDebug() << vertices[0] << " " << vertices[1] << " " << vertices[2] << " " << vertices[3];
+    qDebug() << vertices[4] << " " << vertices[5] << " " << vertices[6] << " " << vertices[7];
+    qDebug() << vertices[8] << " " << vertices[9] << " " << vertices[10] << " " << vertices[11];
+    qDebug() << vertices[12] << " " << vertices[13] << " " << vertices[14] << " " << vertices[15];
+    qDebug() << vertices[16] << " " << vertices[17] << " " << vertices[18] << " " << vertices[19];
+    qDebug() << vertices[20] << " " << vertices[21] << " " << vertices[22] << " " << vertices[23];
+    qDebug() << "*********************************" << endl;
+
+    vbo->allocate(vertices, sizeof(vertices));
+
 }
 
 /*void DrawData::formVertices()

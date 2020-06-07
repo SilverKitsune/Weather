@@ -27,7 +27,7 @@ class DrawData  : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     QMatrix4x4 perspective;
     QMatrix4x4 projection;
     QList<Data> *data;
-    GLfloat vertices [24];
+    //GLfloat vertices [24];
     int N;
    // QOpenGLFunctions_3_3_Core *m_funcs {nullptr};
     QOpenGLContext m_context;

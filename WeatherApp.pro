@@ -57,6 +57,17 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 
 DISTFILES += \
+    fonts/ARIALN.TTF \
+    fonts/ARIALNB.TTF \
+    fonts/ARIALNBI.TTF \
+    fonts/ARIALNI.TTF \
+    fonts/ITCBLKAD.TTF \
+    fonts/VIVALDII.TTF \
+    fonts/arial.ttf \
+    fonts/arialbd.ttf \
+    fonts/arialbi.ttf \
+    fonts/ariali.ttf \
+    fonts/ariblk.ttf \
     sh.fsh \
     sh.vsh
 
