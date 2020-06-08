@@ -28,6 +28,8 @@ CONFIG += c++11
 
 SOURCES += \
     Drawing/drawdata.cpp \
+    Drawing/grid.cpp \
+    Drawing/text.cpp \
     data.cpp \
         main.cpp \
     Coordinates/geocoordinates.cpp \
@@ -41,6 +43,8 @@ HEADERS += \
     Coordinates/geocoordinates.h \
     Coordinates/flatcoordinates.h \
     Drawing/drawdata.h \
+    Drawing/grid.h \
+    Drawing/text.h \
     data.h \
     mainwindow.h \
     Coordinates/converter.h \

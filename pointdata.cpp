@@ -1,5 +1,6 @@
 #include "pointdata.h"
-
-PointData::PointData(int _fi, int _la, float temp) : GeoCoordinates (_fi, _la), param(temp)
+#include "Coordinates/converter.h"
+PointData::PointData(float _fi, float _la, float temp) : GeoCoordinates (_fi, _la), param(temp)
 {
+    flat = Converter::fromGeoToFlat(this); //??
 }

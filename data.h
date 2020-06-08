@@ -13,9 +13,8 @@ public:
     int hour;
     int minute;
    // string typeOfParameter = "Temp";
-    QList<paramData> pointsData;
-
-
+    QList<paramData> pointsData; //надо убрать
+    QList<PointData> *pD;
 
     Data();
     static QList<Data>* readData(QString fileName);

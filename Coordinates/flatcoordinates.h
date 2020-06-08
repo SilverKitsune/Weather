@@ -7,17 +7,17 @@
 class FlatCoordinates
 {
 protected:
-    double x;
-    double y;
+    float x;
+    float y;
 
 public:
 
     FlatCoordinates() : x(0.0), y(0.0) {}
 
-    FlatCoordinates(double _x, double _y) : x(_x), y(_y) {}
+    FlatCoordinates(float _x, float _y) : x(_x), y(_y) {}
 
-    double X() {return x;}
-    double Y() {return y;}
+    float X() {return x;}
+    float Y() {return y;}
 };
 
 #endif // FLATCOORDINATES_H

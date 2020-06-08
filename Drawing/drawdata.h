@@ -9,47 +9,66 @@
 #include <QOpenGLFunctions_3_3_Core>
 #include <QMatrix4x4>
 #include "includes/glm/glm/glm.hpp"
-struct Character {
-    GLuint     TextureID; // ID текстуры глифа
-    glm::vec2  Size;      // Размеры глифа
-    glm::vec2  Bearing;   // Смещение верхней левой точки глифа
-    int     Advance;   // Горизонтальное смещение до начала следующего глифа
-};
+#include "text.h"
+#include "grid.h"
 
 
 class DrawData  : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
 {
     Q_OBJECT
-    QOpenGLShaderProgram *shaderProgram;
-    QOpenGLVertexArrayObject *vao;
-    QOpenGLBuffer *vbo;
-    QOpenGLBuffer *indexBuffer;
-    QMatrix4x4 perspective;
-    QMatrix4x4 projection;
-    QList<Data> *data;
-    //GLfloat vertices [24];
-    int N;
-   // QOpenGLFunctions_3_3_Core *m_funcs {nullptr};
+
     QOpenGLContext m_context;
+
+    /** @brief shaderProgram - шейдерная программа*/
+    QOpenGLShaderProgram *shaderProgram;
+
+    /** @brief vao - Vertex Array Object */
+    QOpenGLVertexArrayObject *vao;
+
+    /** @brief vbo - Vertex Buffer Object */
+    QOpenGLBuffer *vbo;
+
+    /** @brief data - данные считанные из файла*/
+    QList<Data> *data;
+
+    /** @brief N - количество считанных точек*/
+    int N;
+
+    ///позиции параметров шейдеров
     int l_vertex, l_projection, l_textColor;
-public:
-    //std::map<GLchar, Character> Characters;
+
+    /** @brief Characters - массив загруженных текстур для текста*/
     Character Characters;
+
+    Grid *grid;
+
+public:
+
     DrawData(QWidget *parent = 0);
 
+    /** @brief initializeGL - инициализация виджета*/
     void initializeGL() override;
-    void initTextures();
-    void initShaders();
-    void initGeometry();
 
+    /** @brief initTextures - инициализация текстур текста*/
+    void initTextures();
+
+    /** @brief initShaders - инициализация шейдеров*/
+    void initShaders();
+
+    /** @brief resizeGL - изменение размера окна
+     *  @param w - новая ширина
+     *  @param h - новая высота */
     void resizeGL(int w, int h) override;
+
+    /** @brief paintGL - отрисовка виджета
+     *  @todo */
     void paintGL() override;
 
-    void paintData();
-    void formVertices();
-    void testVertices();
+    /** @brief initVertices - инициализаци вершин */
+    void initVertices();
 
-    void renderText(string text, GLfloat x, GLfloat y, GLfloat scale, QVector3D color);
+    /** @brief readData - чтение данных из файла
+     *  @param fileName - путь к файлу */
     void readData(QString fileName);
 
 signals:

@@ -17,13 +17,17 @@
 
 #include "includes/glm/glm/geometric.hpp"
 
+
+/*********************************************************************/
+
 DrawData::DrawData(QWidget *parent) : QOpenGLWidget(parent)
 {
     vao = new QOpenGLVertexArrayObject();
     vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
-    indexBuffer = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
     resize(640,480);
 }
+
+/*********************************************************************/
 
 void DrawData::initTextures()
 {
@@ -71,16 +75,12 @@ void DrawData::initTextures()
             face->glyph->advance.x
         };
         Characters = character;
-        // Characters[c] = character;
 
     FT_Done_Face(face);   // Завершение работы с шрифтом face
     FT_Done_FreeType(ft); // Завершение работы FreeType
 }
 
-/*void DrawData::renderText(string text, GLfloat x, GLfloat y, GLfloat scale, QVector3D color)
-{
-
-}*/
+/*********************************************************************/
 
 void DrawData::initializeGL()
 {
@@ -94,18 +94,13 @@ void DrawData::initializeGL()
         printf("Unable to Initialize OpenGL 3.3 Core.\n");
         exit(99);
     }
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0.4f, 0.6f, 0.8f, 1.00f);
 
-    printf("OpenGL : %s\n",
-           glGetString(GL_VERSION)
-    );
-
     initShaders();
     initTextures();
-
-
 
     // ** Vertex Array Object ** //
     vao->create();
@@ -114,26 +109,24 @@ void DrawData::initializeGL()
     // ** Vertex Buffer Objects ** //
     vbo->create();
     vbo->bind();
-    testVertices();
+    initVertices();
     shaderProgram->enableAttributeArray(l_vertex);
     shaderProgram->setAttributeBuffer(l_vertex,GL_FLOAT,0,4);
-    //initTextures();
+
+    // ** Release ** //
     vao->release();
     vbo->release();
     shaderProgram->release();
 }
 
+/*********************************************************************/
+
 void DrawData::resizeGL(int width, int height)
 {
-    /* ***** Prepare Variables ***** */
-    perspective.setToIdentity();
-    float w = static_cast<float>(width);
-    float h = static_cast<float>(height);
-    float aspectRatio = w / h;
 
-    // * ***** Set the Perspective Matrix ***** */
-    perspective.perspective(65.0f, aspectRatio, 0.1f, 10.0f);
 }
+
+/*********************************************************************/
 
 void DrawData::paintGL()
 {
@@ -149,6 +142,8 @@ void DrawData::paintGL()
     shaderProgram->release();
     update();
 }
+
+/*********************************************************************/
 
 void DrawData::initShaders()
 {
@@ -166,18 +161,9 @@ void DrawData::initShaders()
     l_textColor = shaderProgram->uniformLocation("textColor");
 }
 
-void DrawData::initGeometry()
-{
+/*********************************************************************/
 
-
-}
-
-void DrawData::paintData()
-{
-
-}
-
-void DrawData::testVertices()
+void DrawData::initVertices()
 {
     N = 24;
     GLfloat xpos, ypos, scale = 0.005, w, h;
@@ -218,9 +204,9 @@ void DrawData::testVertices()
     vertices[23] = 0.0;
 
     qDebug() << "*********************************" << endl;
-    qDebug() << vertices[0] << " " << vertices[1] << " " << vertices[2] << " " << vertices[3];
-    qDebug() << vertices[4] << " " << vertices[5] << " " << vertices[6] << " " << vertices[7];
-    qDebug() << vertices[8] << " " << vertices[9] << " " << vertices[10] << " " << vertices[11];
+    qDebug() << vertices[0]  << " " << vertices[1]  << " " << vertices[2]  << " " << vertices[3];
+    qDebug() << vertices[4]  << " " << vertices[5]  << " " << vertices[6]  << " " << vertices[7];
+    qDebug() << vertices[8]  << " " << vertices[9]  << " " << vertices[10] << " " << vertices[11];
     qDebug() << vertices[12] << " " << vertices[13] << " " << vertices[14] << " " << vertices[15];
     qDebug() << vertices[16] << " " << vertices[17] << " " << vertices[18] << " " << vertices[19];
     qDebug() << vertices[20] << " " << vertices[21] << " " << vertices[22] << " " << vertices[23];
@@ -230,12 +216,13 @@ void DrawData::testVertices()
 
 }
 
-/*void DrawData::formVertices()
-{
-    N = data->at(0).pointsData.size();
-}*/
+/*********************************************************************/
 
 void DrawData::readData(QString fileName)
 {
-    data = Data::readData(fileName);
+   // data = Data::readData(fileName);
+    grid = new Grid(fileName);
+    update();
 }
+
+/*********************************************************************/

@@ -7,19 +7,19 @@
 class GeoCoordinates
 {
     /** @brief fi - широта */
-    int fi;
+    float fi;
 
     /** @brief la - долгота */
-    int la;
+    float la;
 
 public:
 
     GeoCoordinates() : fi(0.0), la(0.0) {}
 
-    GeoCoordinates(int _fi, int _la) : fi(_fi), la(_la) {}
+    GeoCoordinates(float _fi, float _la) : fi(_fi), la(_la) {}
 
-    int Fi() {return fi;}
-    int La() {return la;}
+    float Fi() {return fi;}
+    float La() {return la;}
 };
 
 #endif // GEOCOORDINATES_H

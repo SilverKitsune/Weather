@@ -1,6 +1,6 @@
 #ifndef TEMPERATURE_H
 #define TEMPERATURE_H
-//#include "Coordinates/flatcoordinates.h"
+#include "Coordinates/flatcoordinates.h"
 #include "Coordinates/geocoordinates.h"
 
 /**
@@ -9,9 +9,10 @@
 class PointData : public GeoCoordinates
 {
     float param;
-
+    FlatCoordinates *flat;
 public:
-    PointData(int _fi, int _la, float temp);
+    PointData(float _fi, float _la, float temp);
+
 
 };
 
