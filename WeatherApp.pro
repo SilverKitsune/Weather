@@ -35,7 +35,6 @@ SOURCES += \
     Coordinates/geocoordinates.cpp \
     Coordinates/flatcoordinates.cpp \
     mainwindow.cpp \
-    Coordinates/converter.cpp \
     Coordinates/openglcoordinates.cpp \
     pointdata.cpp
 
@@ -47,7 +46,6 @@ HEADERS += \
     Drawing/text.h \
     data.h \
     mainwindow.h \
-    Coordinates/converter.h \
     Coordinates/openglcoordinates.h \
     pointdata.h
 

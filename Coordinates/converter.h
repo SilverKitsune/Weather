@@ -1,5 +1,3 @@
-#ifndef CONVERTER_H
-#define CONVERTER_H
 
 #include "Coordinates/geocoordinates.h"
 #include "Coordinates/openglcoordinates.h"
@@ -61,22 +59,14 @@ namespace Converter
 
     /**
      * @brief fromGeoToOpengl - преобразование географических координат в координаты экрана
-     * @param geo - географические координаты
-     * @param info - текущая информация об экране
      * @return координаты экрана
      */
-   /* OpenglCoordinates *fromGeoToOpengl(GeoCoordinates *geo, ScreenInfo *info)
-    {
-        return fromFlatToOpengl(fromGeoToFlat(geo), info);
-    }*/
-
-    glm::vec2 fromGeoToOpengl(GeoCoordinates *geo, float Cx, float Cy)
+    glm::vec2 fromGeoToOpengl(GeoCoordinates geo, float Cx, float Cy)
     {
         //FlatCoordinates *flat  = fromGeoToFlat(geo);
-        return glm::vec2((geo->Fi()-Cx)/2, (geo->La()-Cy)/2);
+        return glm::vec2((geo.Fi()-Cx)/2, (geo.La()-Cy)/2);
     }
 
 
-};
+}
 
-#endif // CONVERTER_H

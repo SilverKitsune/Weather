@@ -12,6 +12,8 @@ public:
     int day;
     int hour;
     int minute;
+    int Ni = 7; //*
+    int Nj = 7; //*
    // string typeOfParameter = "Temp";
     QList<paramData> pointsData; //надо убрать
     QList<PointData> *pD;

@@ -24,6 +24,7 @@ DrawData::DrawData(QWidget *parent) : QOpenGLWidget(parent)
 {
     vao = new QOpenGLVertexArrayObject();
     vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    grid = new Grid();
     resize(640,480);
 }
 
@@ -98,25 +99,26 @@ void DrawData::initializeGL()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0.4f, 0.6f, 0.8f, 1.00f);
-
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     initShaders();
-    initTextures();
+    //initTextures();
+    grid->vao->create();
+    grid->vao->bind();
 
-    // ** Vertex Array Object ** //
-    vao->create();
-    vao->bind();
+    grid->vbo_vertices->create();
+    grid->vbo_vertices->bind();
 
-    // ** Vertex Buffer Objects ** //
-    vbo->create();
-    vbo->bind();
-    initVertices();
+    grid->ibo_vertices->create();
+    grid->ibo_vertices->bind();
+
+    //initVertices();
     shaderProgram->enableAttributeArray(l_vertex);
-    shaderProgram->setAttributeBuffer(l_vertex,GL_FLOAT,0,4);
+    shaderProgram->setAttributeBuffer(l_vertex,GL_FLOAT,0,2);
 
     // ** Release ** //
-    vao->release();
-    vbo->release();
-    shaderProgram->release();
+    grid->vao->release();
+    grid->ibo_vertices->release();
+    grid->vbo_vertices->release();
 }
 
 /*********************************************************************/
@@ -131,16 +133,19 @@ void DrawData::resizeGL(int width, int height)
 void DrawData::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    glActiveTexture(GL_TEXTURE0);
-    this->glBindTexture(GL_TEXTURE_2D, Characters.TextureID);
-    shaderProgram->bind();
-    vao->bind();
-    shaderProgram->setUniformValue(l_textColor, 0.0,0.0,0.0);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    vao->release();
-    shaderProgram->release();
-    update();
+
+
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, Characters.TextureID);
+        shaderProgram->bind();
+        grid->vao->bind();
+        shaderProgram->setUniformValue(l_textColor, 0.0,0.0,0.0);
+        glDrawElements(GL_TRIANGLES,216,GL_UNSIGNED_INT,0);
+
+        grid->vao->release();
+        shaderProgram->release();
+    //update();
 }
 
 /*********************************************************************/
@@ -221,7 +226,8 @@ void DrawData::initVertices()
 void DrawData::readData(QString fileName)
 {
    // data = Data::readData(fileName);
-    grid = new Grid(fileName);
+    grid->readData(fileName);
+    grid->formVertices();
     update();
 }
 

@@ -8,7 +8,6 @@
 #include "data.h"
 #include <QOpenGLFunctions_3_3_Core>
 #include <QMatrix4x4>
-#include "includes/glm/glm/glm.hpp"
 #include "text.h"
 #include "grid.h"
 
@@ -29,7 +28,7 @@ class DrawData  : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     QOpenGLBuffer *vbo;
 
     /** @brief data - данные считанные из файла*/
-    QList<Data> *data;
+    //QList<Data> *data;
 
     /** @brief N - количество считанных точек*/
     int N;
@@ -40,7 +39,7 @@ class DrawData  : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     /** @brief Characters - массив загруженных текстур для текста*/
     Character Characters;
 
-    Grid *grid;
+    Grid *grid = nullptr;
 
 public:
 
