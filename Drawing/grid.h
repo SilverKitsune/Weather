@@ -4,45 +4,69 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 #include "data.h"
-#include "text.h"
+#include "includes/glm/glm/glm.hpp"
+
+
+/** @brief Character - структура дляя хранения текстуры глифа */
+struct Character {
+    GLuint     TextureID; // ID текстуры глифа
+    glm::vec2  Size;      // Размеры глифа
+    glm::vec2  Bearing;   // Смещение верхней левой точки глифа
+    int     Advance;   // Горизонтальное смещение до начала следующего глифа
+};
 
 class Grid : public QObject
 {
     Q_OBJECT
 
-    Text text;
+    float scale = 0.004;
+    QVector<QVector<GLfloat>> *text_vert;
+    //Text text;
 public:
-QList<Data> *points;
-    /** @brief vao - Vertex Array Object */
-    QOpenGLVertexArrayObject *vao;
+QList<Data> *points = nullptr;
+    /** @brief vao_v - Vertex Array Object */
+    QOpenGLVertexArrayObject *vao_v;
+
+    /** @brief vao_t - Vertex Array Object */
+    QOpenGLVertexArrayObject *vao_t;
 
     /** @brief vbo_vertices - Vertex Buffer Object */
-    QOpenGLBuffer *vbo_vertices;
+    QOpenGLBuffer *vbo_vertices = nullptr;
 
     /** @brief vbo_textures - Vertex Buffer Object */
-    QOpenGLBuffer *vbo_textures;
+    QOpenGLBuffer *vbo_textures = nullptr;
 
     /** @brief ibo_vertices - Index Buffer Object */
     QOpenGLBuffer *ibo_vertices;
 
-    /** @brief ibo_textures - Index Buffer Object */
-    QOpenGLBuffer *ibo_textures;
+    /** @brief Characters - массив загруженных текстур для текста*/
+    QVector<Character> *textures;
 
     explicit Grid(QObject *parent = nullptr);
 
-    Grid(QString fileName);
-
-    void initGrid();
-
-    void paintGrid();
-
-    void paintText();
+    void initTextures();
 
     void formVertices();
 
     void readData(QString fileName);
 
     glm::vec2 fromGeoToOpengl(GeoCoordinates geo, float Cx, float Cy);
+
+    void appendTextVert(int c, GLfloat x, GLfloat y);
+
+    bool isEmpy() {return points;}
+
+    int getSizeOfTextVertAt(int i)
+    {
+        return text_vert->at(i).size();
+    }
+
+    void allocateVboTextAt(int i, QOpenGLBuffer *vbo)
+    {
+        vbo->bind();
+        vbo->allocate(text_vert->at(i).data(), text_vert->at(i).size()*sizeof(GLfloat));
+        vbo->release();
+    }
 
 signals:
 

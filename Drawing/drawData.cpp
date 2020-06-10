@@ -22,8 +22,6 @@
 
 DrawData::DrawData(QWidget *parent) : QOpenGLWidget(parent)
 {
-    vao = new QOpenGLVertexArrayObject();
-    vbo = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     grid = new Grid();
     resize(640,480);
 }
@@ -39,11 +37,13 @@ void DrawData::initTextures()
     if (FT_New_Face(ft, "C:\\Users\\Allo4ka\\Desktop\\qtprojects\\WeatherApp\\fonts\\trebuc.ttf", 0, &face))
         std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 
-    FT_Set_Pixel_Sizes(face,0,48);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
+    FT_Set_Pixel_Sizes(face,0,12);
 
+
+    for(char i = '0'; i <='9'; i++)
+    {
         // Load character glyph
-        if (FT_Load_Char(face, '2', FT_LOAD_RENDER))
+        if (FT_Load_Char(face, i, FT_LOAD_RENDER))
         {
             std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
             return;
@@ -75,8 +75,8 @@ void DrawData::initTextures()
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
             face->glyph->advance.x
         };
-        Characters = character;
-
+        grid->textures->append(character);
+    }
     FT_Done_Face(face);   // Завершение работы с шрифтом face
     FT_Done_FreeType(ft); // Завершение работы FreeType
 }
@@ -99,26 +99,24 @@ void DrawData::initializeGL()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0.4f, 0.6f, 0.8f, 1.00f);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     initShaders();
-    //initTextures();
-    grid->vao->create();
-    grid->vao->bind();
-
+    initTextures();
+    grid->vbo_textures->create();
     grid->vbo_vertices->create();
-    grid->vbo_vertices->bind();
-
     grid->ibo_vertices->create();
-    grid->ibo_vertices->bind();
 
-    //initVertices();
-    shaderProgram->enableAttributeArray(l_vertex);
-    shaderProgram->setAttributeBuffer(l_vertex,GL_FLOAT,0,2);
 
-    // ** Release ** //
-    grid->vao->release();
-    grid->ibo_vertices->release();
-    grid->vbo_vertices->release();
+   /* shaderProgram_t->bind();
+
+    grid->vbo_textures->create();
+    grid->vbo_textures->bind();
+    shaderProgram_t->enableAttributeArray(l_text);
+    shaderProgram_t->setAttributeBuffer(l_text,GL_FLOAT,0,4);
+
+    grid->vbo_textures->release();
+    shaderProgram_t->release();*/
 }
 
 /*********************************************************************/
@@ -133,42 +131,86 @@ void DrawData::resizeGL(int width, int height)
 void DrawData::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
+    if(grid->isEmpy())
+        grid->formVertices();
 
 
+    /* ********************** */
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    shaderProgram_t->bind();
+   // glActiveTexture(GL_TEXTURE0);
+    for(int i = 0; i < 10 && grid->getSizeOfTextVertAt(i) > 0; i++)
+    {
+        QOpenGLBuffer *vbo_textures = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+        vbo_textures->create();
+        grid->allocateVboTextAt(i, vbo_textures);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, grid->textures->at(i).TextureID);
+        vbo_textures->bind();
 
-        //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, Characters.TextureID);
-        shaderProgram->bind();
-        grid->vao->bind();
-        shaderProgram->setUniformValue(l_textColor, 0.0,0.0,0.0);
-        glDrawElements(GL_TRIANGLES,216,GL_UNSIGNED_INT,0);
+        shaderProgram_t->enableAttributeArray(l_text);
+        shaderProgram_t->setAttributeBuffer(l_text,GL_FLOAT,0,4);
+        glDrawArrays(GL_TRIANGLES,0,grid->getSizeOfTextVertAt(i));
+        glBindTexture(GL_TEXTURE_2D, 0);
+        vbo_textures->release();
+        delete vbo_textures;
+    }
 
-        grid->vao->release();
-        shaderProgram->release();
-    //update();
+    grid->vbo_textures->release();
+    shaderProgram_t->release();
+
+    /* ********************** */
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    shaderProgram_g->bind();
+    grid->vbo_vertices->bind();
+    shaderProgram_g->enableAttributeArray(l_vertex);
+    shaderProgram_g->setAttributeBuffer(l_vertex,GL_FLOAT,0,2);
+    grid->ibo_vertices->bind();
+
+    glDrawElements(GL_TRIANGLES,216,GL_UNSIGNED_INT,0);
+
+    grid->ibo_vertices->release();
+    grid->vbo_vertices->release();
+    shaderProgram_g->release();
+
 }
 
 /*********************************************************************/
 
 void DrawData::initShaders()
 {
-    QString vert = "C:\\Users\\Allo4ka\\Desktop\\qtprojects\\WeatherApp\\sh.vsh";
-    QString frag = "C:\\Users\\Allo4ka\\Desktop\\qtprojects\\WeatherApp\\sh.fsh";
-    shaderProgram = new QOpenGLShaderProgram();
-    shaderProgram->create();
-    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, vert);
-    shaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, frag);
-    shaderProgram->link();
-    shaderProgram->bind();
+    QString vert_g = "C:\\Users\\Allo4ka\\Desktop\\qtprojects\\WeatherApp\\grid.vsh";
+    QString frag_g = "C:\\Users\\Allo4ka\\Desktop\\qtprojects\\WeatherApp\\grid.fsh";
+    QString vert_t = "C:\\Users\\Allo4ka\\Desktop\\qtprojects\\WeatherApp\\text.vsh";
+    QString frag_t = "C:\\Users\\Allo4ka\\Desktop\\qtprojects\\WeatherApp\\text.fsh";
 
-    l_vertex = shaderProgram->attributeLocation("vertex");
-    l_projection = shaderProgram->uniformLocation("projection");
-    l_textColor = shaderProgram->uniformLocation("textColor");
+    shaderProgram_g = new QOpenGLShaderProgram();
+    shaderProgram_t = new QOpenGLShaderProgram();
+
+    shaderProgram_g->create();
+    shaderProgram_g->addShaderFromSourceFile(QOpenGLShader::Vertex, vert_g);
+    shaderProgram_g->addShaderFromSourceFile(QOpenGLShader::Fragment, frag_g);
+    shaderProgram_g->link();
+    //shaderProgram_g->bind();
+
+    shaderProgram_t->create();
+    shaderProgram_t->addShaderFromSourceFile(QOpenGLShader::Vertex, vert_t);
+    shaderProgram_t->addShaderFromSourceFile(QOpenGLShader::Fragment, frag_t);
+    shaderProgram_t->link();
+    //shaderProgram_t->bind();
+
+    l_vertex = shaderProgram_g->attributeLocation("vertex");
+
+    l_text = shaderProgram_t->attributeLocation("_text");
+    l_projection = shaderProgram_t->uniformLocation("projection");
+    l_textColor = shaderProgram_t->uniformLocation("textColor");
+
+    qDebug() << l_vertex << "" << l_text << " " << l_textColor;
 }
 
 /*********************************************************************/
 
-void DrawData::initVertices()
+/*void DrawData::initVertices()
 {
     N = 24;
     GLfloat xpos, ypos, scale = 0.005, w, h;
@@ -219,7 +261,7 @@ void DrawData::initVertices()
 
     vbo->allocate(vertices, sizeof(vertices));
 
-}
+}*/
 
 /*********************************************************************/
 
@@ -227,7 +269,7 @@ void DrawData::readData(QString fileName)
 {
    // data = Data::readData(fileName);
     grid->readData(fileName);
-    grid->formVertices();
+    //grid->formVertices();
     update();
 }
 

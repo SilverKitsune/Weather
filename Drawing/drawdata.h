@@ -8,38 +8,25 @@
 #include "data.h"
 #include <QOpenGLFunctions_3_3_Core>
 #include <QMatrix4x4>
-#include "text.h"
 #include "grid.h"
+
 
 
 class DrawData  : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
 {
     Q_OBJECT
 
+    QOpenGLShader *shader_grid_v, *shader_grid_f, *shader_text_v, *shader_text_f;
+
     QOpenGLContext m_context;
 
     /** @brief shaderProgram - шейдерная программа*/
-    QOpenGLShaderProgram *shaderProgram;
-
-    /** @brief vao - Vertex Array Object */
-    QOpenGLVertexArrayObject *vao;
-
-    /** @brief vbo - Vertex Buffer Object */
-    QOpenGLBuffer *vbo;
-
-    /** @brief data - данные считанные из файла*/
-    //QList<Data> *data;
-
-    /** @brief N - количество считанных точек*/
-    int N;
+    QOpenGLShaderProgram *shaderProgram_g, *shaderProgram_t;
 
     ///позиции параметров шейдеров
-    int l_vertex, l_projection, l_textColor;
+    int l_vertex, l_text, l_projection, l_textColor;
 
-    /** @brief Characters - массив загруженных текстур для текста*/
-    Character Characters;
-
-    Grid *grid = nullptr;
+    Grid *grid;
 
 public:
 
@@ -62,9 +49,6 @@ public:
     /** @brief paintGL - отрисовка виджета
      *  @todo */
     void paintGL() override;
-
-    /** @brief initVertices - инициализаци вершин */
-    void initVertices();
 
     /** @brief readData - чтение данных из файла
      *  @param fileName - путь к файлу */

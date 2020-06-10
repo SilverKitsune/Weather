@@ -35,7 +35,6 @@ SOURCES += \
     Coordinates/geocoordinates.cpp \
     Coordinates/flatcoordinates.cpp \
     mainwindow.cpp \
-    Coordinates/openglcoordinates.cpp \
     pointdata.cpp
 
 HEADERS += \
@@ -46,7 +45,6 @@ HEADERS += \
     Drawing/text.h \
     data.h \
     mainwindow.h \
-    Coordinates/openglcoordinates.h \
     pointdata.h
 
 
@@ -59,19 +57,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 
 DISTFILES += \
-    fonts/ARIALN.TTF \
-    fonts/ARIALNB.TTF \
-    fonts/ARIALNBI.TTF \
-    fonts/ARIALNI.TTF \
-    fonts/ITCBLKAD.TTF \
-    fonts/VIVALDII.TTF \
-    fonts/arial.ttf \
-    fonts/arialbd.ttf \
-    fonts/arialbi.ttf \
-    fonts/ariali.ttf \
-    fonts/ariblk.ttf \
-    sh.fsh \
-    sh.vsh
+    grid.fsh \
+    grid.vsh \
+    text.fsh \
+    text.vsh
 
 unix|win32: LIBS += -L$$PWD/includes/testLIB/lib/ -lparser
 
