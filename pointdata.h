@@ -9,13 +9,13 @@
 class PointData : public GeoCoordinates
 {
     float param;
-    FlatCoordinates *flat;
+
 public:
+    FlatCoordinates *flat;
     PointData(): GeoCoordinates(), param(0.0) {}
     PointData(float _fi, float _la, float temp);
     float getParam() {return param;}
-
-
+    static FlatCoordinates* toFlat(float _fi,float _la);
 };
 
 #endif // TEMPERATURE_H

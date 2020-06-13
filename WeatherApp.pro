@@ -57,10 +57,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 
 DISTFILES += \
-    grid.fsh \
-    grid.vsh \
-    text.fsh \
-    text.vsh
+    Shaders/grid.fsh \
+    Shaders/grid.vsh \
+    Shaders/text.fsh \
+    Shaders/text.vsh
 
 unix|win32: LIBS += -L$$PWD/includes/testLIB/lib/ -lparser
 

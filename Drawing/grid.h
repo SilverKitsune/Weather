@@ -19,11 +19,26 @@ class Grid : public QObject
 {
     Q_OBJECT
 
-    float scale = 0.004;
+    float scaleX;
+    float scaleY;
+    float scaleMap;
+    bool needToUpdate;
+
+    glm::vec2 centreOfGrid;
+
     QVector<QVector<GLfloat>> *text_vert;
     //Text text;
 public:
-QList<Data> *points = nullptr;
+
+    void setScale(float sx, float sy)
+    {
+        scaleX = sx;
+        scaleY = sy;
+    }
+
+    bool isUpdated() {return !needToUpdate;}
+
+    QList<Data> *points = nullptr;
     /** @brief vao_v - Vertex Array Object */
     QOpenGLVertexArrayObject *vao_v;
 
@@ -50,22 +65,51 @@ QList<Data> *points = nullptr;
 
     void readData(QString fileName);
 
-    glm::vec2 fromGeoToOpengl(GeoCoordinates geo, float Cx, float Cy);
+    glm::vec2 toOpengl(float x, float y, float Cx, float Cy);
 
     void appendTextVert(int c, GLfloat x, GLfloat y);
 
-    bool isEmpy() {return points;}
+    bool isEmpy() {return !points;}
 
     int getSizeOfTextVertAt(int i)
     {
-        return text_vert->at(i).size();
+        if(text_vert)
+            return text_vert->at(i).size();
+        else return -1;
     }
 
     void allocateVboTextAt(int i, QOpenGLBuffer *vbo)
     {
         vbo->bind();
-        vbo->allocate(text_vert->at(i).data(), text_vert->at(i).size()*sizeof(GLfloat));
+        GLfloat *data_i = text_vert->value(i).data();
+        vbo->allocate(data_i, text_vert->value(i).size()*sizeof(GLfloat));
         vbo->release();
+    }
+
+    void deleteTextVert()
+    {
+        if(text_vert)
+        {
+            text_vert->clear();
+            delete text_vert;
+        }
+    }
+
+    void debugTextVert()
+    {
+        for(int i = 0; i < 10; i++)
+        {
+            qDebug() << "|******* " << i << " *******";
+            for(int j = 0; j < text_vert->at(i).size(); j++)
+            {
+                if(j % 24 == 0)
+                    qDebug() << "|    ++++++++++ " << j/24 << " ++++++++++";
+                if(j % 4 == 0)
+                    qDebug() << "|        ______ " << j / 4 <<" _______";
+                qDebug() << "|            " << text_vert->at(i).at(j);
+            }
+            qDebug() << endl;
+        }
     }
 
 signals:

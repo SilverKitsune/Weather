@@ -1,16 +1,11 @@
 #ifndef DRAWDOT_H
 #define DRAWDOT_H
 
+#include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLWidget>
 #include <QOpenGLShaderProgram>
-#include <QOpenGLVertexArrayObject>
-#include <QOpenGLBuffer>
 #include "data.h"
-#include <QOpenGLFunctions_3_3_Core>
-#include <QMatrix4x4>
 #include "grid.h"
-
-
 
 class DrawData  : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
 {
@@ -53,6 +48,10 @@ public:
     /** @brief readData - чтение данных из файла
      *  @param fileName - путь к файлу */
     void readData(QString fileName);
+
+    void paintTemperatureGrgid();
+
+    void initTemperatureGrid();
 
 signals:
 
