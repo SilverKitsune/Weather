@@ -8,112 +8,146 @@
 
 
 /** @brief Character - структура дляя хранения текстуры глифа */
-struct Character {
-    GLuint     TextureID; // ID текстуры глифа
-    glm::vec2  Size;      // Размеры глифа
-    glm::vec2  Bearing;   // Смещение верхней левой точки глифа
-    int     Advance;   // Горизонтальное смещение до начала следующего глифа
+struct Character
+{
+    /** @brief TextureID - ID текстуры глифа */
+    GLuint textureID;
+
+    /** @brief Size - размеры глифа*/
+    glm::vec2 size;
+
+    /** @brief Bearing - Смещение верхней левой точки глифа */
+    glm::vec2 bearing;
+
+    /** @brief Advance - горизонтальное смещение до начала следующего глифа */
+    int advance;
 };
 
 class Grid : public QObject
 {
     Q_OBJECT
 
+    /** @brief scaleX - масштаб по оси X */
     float scaleX;
+
+    /** @brief scaleY - масштаб по оси Y */
     float scaleY;
+
+    /** @brief scaleMap - масштаб карты */
     float scaleMap;
-    bool needToUpdate;
 
-    glm::vec2 centreOfGrid;
+    /** @brief centreOfGrid - географические координаты центра виджета */
+    glm::vec2 centreOfWidget;
 
+    /** @brief text_vert - координаты текста*/
     QVector<QVector<GLfloat>> *text_vert;
-    //Text text;
-public:
 
-    void setScale(float sx, float sy)
-    {
-        scaleX = sx;
-        scaleY = sy;
-    }
-
-    bool isUpdated() {return !needToUpdate;}
-
+    /** @brief points - данные о температуре*/
     QList<Data> *points = nullptr;
-    /** @brief vao_v - Vertex Array Object */
-    QOpenGLVertexArrayObject *vao_v;
-
-    /** @brief vao_t - Vertex Array Object */
-    QOpenGLVertexArrayObject *vao_t;
-
-    /** @brief vbo_vertices - Vertex Buffer Object */
-    QOpenGLBuffer *vbo_vertices = nullptr;
-
-    /** @brief vbo_textures - Vertex Buffer Object */
-    QOpenGLBuffer *vbo_textures = nullptr;
-
-    /** @brief ibo_vertices - Index Buffer Object */
-    QOpenGLBuffer *ibo_vertices;
 
     /** @brief Characters - массив загруженных текстур для текста*/
     QVector<Character> *textures;
 
-    explicit Grid(QObject *parent = nullptr);
-
-    void initTextures();
-
-    void formVertices();
-
-    void readData(QString fileName);
-
-    glm::vec2 toOpengl(float x, float y, float Cx, float Cy);
-
+    /** @brief appendTextVert - добавление элемента в вектор с координатами текста
+     *  @param c - цифра
+     *  @param x - координата X правого угла
+     *  @param y - координата Y правого угла */
     void appendTextVert(int c, GLfloat x, GLfloat y);
 
+public:
+
+    void setMapScale(float zoom) { scaleMap *= zoom;}
+
+    void changeCenterOfWidget(int w, int h);
+
+    float getScaleX() {return scaleX;}
+
+    float getScaleY() {return scaleY;}
+
+    /** @brief ibo_vertices - Index Buffer Object */
+    QOpenGLBuffer *ibo_vertices;
+
+    /** @brief vbo_vertices - Vertex Buffer Object */
+    QOpenGLBuffer *vbo_vertices = nullptr;
+
+    explicit Grid(QObject *parent = nullptr);
+
+    ~Grid();
+
+    /** @brief getMapScale возвращает текущий масштаб карты
+     *  @return масштаб карты */
+    float getMapScale() {return scaleMap;}
+
+    /** @brief getCentreOfWidget
+     *  @return географические координаты, соответствующие центру виджета */
+    glm::vec2 getCentreOfWidget() {return centreOfWidget;}
+
+    /** @brief setCentre - изменение географиесой координаты центра виджета
+     *  @param la
+     *  @param fi */
+    void setCentre(float la, float fi)
+    {
+        centreOfWidget.x = la;
+        centreOfWidget.y = fi;
+    }
+
+    /** @brief setScale изменяет масштаб по осям X и Y
+     *  @param sx - новый масштаб по оси Х
+     *  @param sy - новый масштаб по Y */
+    void setScale(float sx, float sy);
+
+    /** @brief initTextures - формироавние текстур символов */
+    void initTextures();
+
+    /** @brief formVertices - формирование вершин для отрисовки */
+    void formVertices();
+
+    /** @brief readData - чтение данных из файла
+     *  @param fileName - имя файла */
+    void readData(QString fileName);
+
+    /** @brief toOpengl - перевод географических координат в экранные
+     *  @param x
+     *  @param y
+     *  @param Cx
+     *  @param Cy
+     *  @return */
+    glm::vec2 toOpengl(float x, float y, float Cx, float Cy);
+
+    /** @brief isEmpy - возвращает false, если данные были загружены, иначе - true
+     *  @return false, если данные были загружены, иначе - true */
     bool isEmpy() {return !points;}
 
-    int getSizeOfTextVertAt(int i)
-    {
-        if(text_vert)
-            return text_vert->at(i).size();
-        else return -1;
-    }
+    /** @brief getSizeOfTextVertAt - получение количества повторений цифры i среди значений температуры
+     *  @param i - цифра
+     *  @return количество повторений цифры i */
+    int getSizeOfTextVertAt(int i);
 
-    void allocateVboTextAt(int i, QOpenGLBuffer *vbo)
-    {
-        vbo->bind();
-        GLfloat *data_i = text_vert->value(i).data();
-        vbo->allocate(data_i, text_vert->value(i).size()*sizeof(GLfloat));
-        vbo->release();
-    }
+    /** @brief allocateVboTextAt - заполнение буфера координатами цифры i
+     *  @param i - цифра
+     *  @param vbo - указатель на буфер */
+    void allocateVboTextAt(int i, QOpenGLBuffer *vbo);
 
-    void deleteTextVert()
-    {
-        if(text_vert)
-        {
-            text_vert->clear();
-            delete text_vert;
-        }
-    }
+    /** @brief deleteTextVert - очистка вектора с координатами текста*/
+    void deleteTextVert();
 
-    void debugTextVert()
-    {
-        for(int i = 0; i < 10; i++)
-        {
-            qDebug() << "|******* " << i << " *******";
-            for(int j = 0; j < text_vert->at(i).size(); j++)
-            {
-                if(j % 24 == 0)
-                    qDebug() << "|    ++++++++++ " << j/24 << " ++++++++++";
-                if(j % 4 == 0)
-                    qDebug() << "|        ______ " << j / 4 <<" _______";
-                qDebug() << "|            " << text_vert->at(i).at(j);
-            }
-            qDebug() << endl;
-        }
-    }
+    /** @brief appendTexture - добавление сгенерированной текстуры
+     *  @param _id - идентификатор текстуры
+     *  @param _size - размеры глифа
+     *  @param _bearing - смещение верхней левой точки глифа
+     *  @param _advance - горизонтальное смещение до следующего глифа */
+    void appendTexture(GLuint _id, glm::ivec2 _size, glm::ivec2 _bearing, int _advance);
 
-signals:
+    /** @brief getTextureID - возвращает идентификатор текстуры цифры i
+     *  @param i - цифра
+     *  @return идентификатор текстуры i */
+    GLuint getTextureID(int i) { return textures->at(i).textureID; }
 
+    /** @brief fromPixelsToGeo - перевод из экранных координат в географические
+     *  @param x
+     *  @param y
+     *  @return */
+    glm::vec2 fromPixelsToGeo(int x, int y);
 };
 
 #endif // GRID_H

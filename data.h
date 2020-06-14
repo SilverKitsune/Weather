@@ -15,10 +15,10 @@ public:
     int Ni = 7; //*
     int Nj = 7; //*
    // string typeOfParameter = "Temp";
-    QList<paramData> pointsData; //надо убрать
     QList<PointData> *pD;
 
     Data();
+    ~Data();
     static QList<Data>* readData(QString fileName);
 
     /*void setTypeOfParameter(string type) {typeOfParameter = type;}

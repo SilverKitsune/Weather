@@ -4,6 +4,12 @@ Data::Data()
     pD = new QList<PointData> ();
 }
 
+Data::~Data()
+{
+    pD->clear();
+    delete pD;
+}
+
 QList<Data>* Data::readData(QString fileName)
 {
     Parser parser;
@@ -20,7 +26,6 @@ QList<Data>* Data::readData(QString fileName)
         data_i->day = messages.at(i).at(0).day;
         data_i->hour = messages.at(i).at(0).hour;
         data_i->minute = messages.at(i).at(0).minut;
-        data_i->pointsData = messages.at(i);
         for(int j = 0; j < messages.at(i).size(); j++)
         {
             data_i->pD->append(PointData(messages.at(i).at(j).La,

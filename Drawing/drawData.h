@@ -6,12 +6,11 @@
 #include <QOpenGLShaderProgram>
 #include "data.h"
 #include "grid.h"
+#include <QToolTip>
 
 class DrawData  : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
 {
     Q_OBJECT
-
-    QOpenGLShader *shader_grid_v, *shader_grid_f, *shader_text_v, *shader_text_f;
 
     QOpenGLContext m_context;
 
@@ -24,6 +23,11 @@ class DrawData  : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     Grid *grid;
 
 public:
+
+    ~DrawData()
+    {
+        delete grid;
+    }
 
     DrawData(QWidget *parent = 0);
 
@@ -49,13 +53,18 @@ public:
      *  @param fileName - путь к файлу */
     void readData(QString fileName);
 
+    /** @brief paintTemperatureGrgid - отрисовка сетки с температурой*/
     void paintTemperatureGrgid();
 
+    /** @brief initTemperatureGrid - инициализация сетки */
     void initTemperatureGrid();
 
-signals:
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 
-public slots:
+public:
+    bool event(QEvent *event) override;
 };
 
 #endif // DRAWDOT_H

@@ -6,7 +6,7 @@
 #include <QCoreApplication>
 #include <math.h>
 #include <ft2build.h>
-
+#include <QMouseEvent>
 #include FT_FREETYPE_H
 
 #define GLEW_STATIC
@@ -19,13 +19,19 @@
 
 #include "includes/glm/glm/geometric.hpp"
 
+///TODO вывод даты, времени и граничных координат
+///
+
 
 /*********************************************************************/
 
 DrawData::DrawData(QWidget *parent) : QOpenGLWidget(parent)
 {
+    //toolTip = new QToolTip();
     grid = new Grid();
     resize(640,480);
+    //setToolTip("tooltip");
+    setToolTipDuration(200);
 }
 
 /*********************************************************************/
@@ -39,8 +45,7 @@ void DrawData::initTextures()
     if (FT_New_Face(ft, (QCoreApplication::applicationDirPath().toUtf8() + "/fonts/trebuc.ttf"), 0, &face))
         qDebug() << "ERROR::FREETYPE: Failed to load font" << endl;
 
-    FT_Set_Pixel_Sizes(face,0,12);
-
+    FT_Set_Pixel_Sizes(face,0,24);
 
     for(char i = '0'; i <='9'; i++)
     {
@@ -70,14 +75,11 @@ void DrawData::initTextures()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // Now store character for later use
-        Character character = {
-            texture,
-            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            face->glyph->advance.x
-        };
-        grid->textures->append(character);
+
+        grid->appendTexture(texture,
+                            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+                            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+                            face->glyph->advance.x);
     }
     FT_Done_Face(face);   // Завершение работы с шрифтом face
     FT_Done_FreeType(ft); // Завершение работы FreeType
@@ -101,7 +103,7 @@ void DrawData::initializeGL()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0.4f, 0.6f, 0.8f, 1.00f);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     initShaders();
     initTextures();
     initTemperatureGrid();
@@ -111,9 +113,14 @@ void DrawData::initializeGL()
 
 void DrawData::resizeGL(int w, int h)
 {
-    grid->setScale(2.0/w, 2.0/h);
 
-    glViewport(0,0,w,h);
+    if(!grid->isEmpy())
+    {
+        grid->changeCenterOfWidget(w*0.5,h*0.5);
+    }
+    grid->setScale(2.0/w, 2.0/h);
+    //glViewport(0,0,w,h);
+    //repaint();
 }
 
 /*********************************************************************/
@@ -122,7 +129,6 @@ void DrawData::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     paintTemperatureGrgid();
-
 }
 
 /*********************************************************************/
@@ -159,7 +165,7 @@ void DrawData::initShaders()
 void DrawData::readData(QString fileName)
 {
     grid->readData(fileName);
-    update();
+    repaint();
 }
 
 /*********************************************************************/
@@ -169,8 +175,20 @@ void DrawData::paintTemperatureGrgid()
     if(!grid->isEmpy())
         grid->formVertices();
 
-    /* ********************** */
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    shaderProgram_g->bind();
+    grid->vbo_vertices->bind();
+    shaderProgram_g->enableAttributeArray(l_vertex);
+    shaderProgram_g->setAttributeBuffer(l_vertex,GL_FLOAT,0,2);
+    grid->ibo_vertices->bind();
+
+    glDrawElements(GL_TRIANGLES,216,GL_UNSIGNED_INT,0);
+
+    grid->ibo_vertices->release();
+    grid->vbo_vertices->release();
+    shaderProgram_g->release();
+
     shaderProgram_t->bind();
     glActiveTexture(GL_TEXTURE0);
 
@@ -180,7 +198,7 @@ void DrawData::paintTemperatureGrgid()
         vbo_textures->create();
         grid->allocateVboTextAt(i, vbo_textures);
 
-        glBindTexture(GL_TEXTURE_2D, grid->textures->at(i).TextureID);
+        glBindTexture(GL_TEXTURE_2D, grid->getTextureID(i));
         vbo_textures->bind();
 
         shaderProgram_t->enableAttributeArray(l_text);
@@ -195,20 +213,9 @@ void DrawData::paintTemperatureGrgid()
     }
     shaderProgram_t->release();
 
-    /* ********************** */
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    shaderProgram_g->bind();
-    grid->vbo_vertices->bind();
-    shaderProgram_g->enableAttributeArray(l_vertex);
-    shaderProgram_g->setAttributeBuffer(l_vertex,GL_FLOAT,0,2);
-    grid->ibo_vertices->bind();
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    glDrawElements(GL_TRIANGLES,216,GL_UNSIGNED_INT,0);
-
-    grid->ibo_vertices->release();
-    grid->vbo_vertices->release();
-    shaderProgram_g->release();
 
     grid->deleteTextVert();
 
@@ -218,9 +225,50 @@ void DrawData::paintTemperatureGrgid()
 
 void DrawData::initTemperatureGrid()
 {
-    grid->vbo_textures->create();
     grid->vbo_vertices->create();
     grid->ibo_vertices->create();
+}
+
+/*********************************************************************/
+
+void DrawData::mousePressEvent(QMouseEvent *event)
+{
+    grid->changeCenterOfWidget(event->x(), event->y());
+    repaint();
+}
+
+/*********************************************************************/
+
+void DrawData::wheelEvent(QWheelEvent *event)
+{
+    QPoint numDegrees = event->angleDelta() / 8;
+
+    float zoom;
+
+    if(!numDegrees.isNull())
+    {
+        zoom = numDegrees.y() / 8;
+    }
+
+    if(zoom > 0)
+        grid->setMapScale(1.5*zoom);
+    else
+        grid->setMapScale(1.0 / (0 - 1.5*zoom));
+    repaint();
+
+}
+
+bool DrawData::event(QEvent *event)
+{
+    if(event->type() == QEvent::ToolTip)
+    {
+        QHelpEvent *helpEvent = static_cast<QHelpEvent *>(event);
+           glm::vec2 geoPosition = grid->fromPixelsToGeo(helpEvent->pos().x(), helpEvent->pos().y());
+           QString position = QString::number(geoPosition.x) + "° \n" + QString::number(geoPosition.y) + "°";
+           QToolTip::showText(helpEvent->globalPos(),position);
+        return true;
+    }
+    return QWidget::event(event);
 }
 
 /*********************************************************************/

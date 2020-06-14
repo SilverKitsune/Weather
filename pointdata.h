@@ -3,9 +3,7 @@
 #include "Coordinates/flatcoordinates.h"
 #include "Coordinates/geocoordinates.h"
 
-/**
- * @brief Класс хранящий температуру и координаты
- */
+/** @brief Класс хранящий температуру и координаты */
 class PointData : public GeoCoordinates
 {
     float param;
